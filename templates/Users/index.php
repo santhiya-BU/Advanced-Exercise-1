@@ -8,7 +8,10 @@
         <th>ID</th>
         <th>Name</th>
         <th>Email</th>
-        <th>Profile Picture</th>
+        <th>Description</th>
+        <th>Role</th>
+        <th>Gender</th>
+        <th>Date of Birth</th>
         <th>Actions</th>
     </tr>
     <?php foreach ($users as $user): ?>
@@ -16,6 +19,10 @@
             <td><?= h($user->id) ?></td>
             <td><?= h($user->name) ?></td>
             <td><?= h($user->email) ?></td>
+            <td><?= h($user->description) ?></td>
+            <td><?= h($user->role) ?></td>
+            <td><?= h($user->gender) ?></td>
+            <td><?= h($user->dob) ?></td>
             <td>
                 <?= $user->profile_picture ? $this->Html->image($user->profile_picture, ['alt' => 'Profile Picture', 'width' => '50']) : 'No image' ?>
             </td>

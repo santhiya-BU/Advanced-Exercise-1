@@ -19,50 +19,61 @@ class UsersController extends AppController
         $this->set(compact('users'));
     }
 
-    // public function view($id = null)
-    // {
-    //     $author = $this->Users->get($id); // Load associated publishers
-
-    //     $this->set(compact('users'));
-    // }
+    public function view($id = null)
+    {
+        $author = $this->Users->get($id); 
+        $this->set(compact('users'));
+    }
 
     public function addEdit($id = null)
-    {
-        // If there's an ID, we're editing; otherwise, we're adding
-        $user = $id ? $this->Users->get($id) : $this->Users->newEmptyEntity();
+{
+    $user = $id ? $this->Users->get($id) : $this->Users->newEmptyEntity();
 
-        // Check if form is submitted (post or put request)
-        if ($this->request->is(['post', 'put'])) {
-            // Handling file upload (check the correct field name)
-            $profilePicture = $this->request->getData('profile_picture');
+    if ($this->request->is(['post', 'put'])) {
+        $data = $this->request->getData();
+        $profilePicture = $data['profile_picture']; // UploadedFile object
 
-            // Ensure it's a valid file object
-            if ($profilePicture && $profilePicture->getError() === UPLOAD_ERR_OK) {
-                $targetPath = 'uploads' . DS . 'profile_pictures' . DS;
-                $fileName = uniqid() . '_' . $profilePicture->getClientFilename();
-                $targetFile = WWW_ROOT . $targetPath . $fileName;
+        if ($profilePicture && $profilePicture->getError() === UPLOAD_ERR_OK) {
+            $fileName = uniqid() . '_' . $profilePicture->getClientFilename();
+            $uploadPath = 'uploads' . DS . 'profile_pictures' . DS;
+            $fullPath = WWW_ROOT . $uploadPath;
 
-                // Move the uploaded file to the desired folder
-                if ($profilePicture->moveTo($targetFile)) {
-                    $user->profile_picture = $targetPath . $fileName;  // Save file path in the database
-                } else {
-                    $this->Flash->error(__('The file could not be uploaded.'));
-                }
+            // Make sure directory exists
+            if (!file_exists($fullPath)) {
+                mkdir($fullPath, 0775, true);
             }
 
-            // Patching data into the user entity
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $profilePicture->moveTo($fullPath . $fileName); // Save file
 
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('Unable to save the user.'));
+            // Replace file object with its path as string (important!)
+            $data['profile_picture'] = $uploadPath . $fileName;
+         
+        } else {
+            // Remove it if empty (avoid trying to store the object)
+            unset($data['profile_picture']);
         }
 
-        // Ensure the $user variable is always set
-        $this->set(compact('user'));
+        // Patch user without the UploadedFile object
+        $user = $this->Users->patchEntity($user, $data);
+ 
+        // Optional: Hash password if present
+        if (!empty($user->password)) {
+            $user->password = (new \Cake\Auth\DefaultPasswordHasher())->hash($user->password);
+        }
+        
+        if ($this->Users->save($user)) {
+            $this->Flash->success(__('User saved successfully.'));
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $this->Flash->error(__('Unable to save user.'));
+        debug($user->getErrors());
     }
+
+    $this->set(compact('user'));
+}
+
+
 
 
 

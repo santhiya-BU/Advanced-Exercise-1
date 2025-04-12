@@ -23,6 +23,24 @@
             'type' => 'password' // Password field
         ]) ?>
 
+        <?= $this->Form->control('description', [
+            'type' => 'textarea',
+            'label' => 'Biography / Description',
+            'rows' => 5
+        ]) ?>
+
+        <?= $this->Form->control('gender', [
+            'type' => 'select',
+            'options' => ['Male' => 'Male', 'Female' => 'Female', 'Other' => 'Other'],
+            'empty' => 'Select Gender'
+        ]) ?>
+
+        <?= $this->Form->control('dob', [
+            'type' => 'date',
+            'label' => 'Date of Birth',
+            'empty' => true
+    ]   ) ?>
+
         <!-- Role Select -->
         <?= $this->Form->control('role', [
             'type' => 'select',
