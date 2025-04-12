@@ -23,9 +23,9 @@
             <td><?= h($user->role) ?></td>
             <td><?= h($user->gender) ?></td>
             <td><?= h($user->dob) ?></td>
-            <td>
+            <!-- <td>
                 <?= $user->profile_picture ? $this->Html->image($user->profile_picture, ['alt' => 'Profile Picture', 'width' => '50']) : 'No image' ?>
-            </td>
+            </td> -->
             <td>
                 <?= $this->Html->link('Edit', ['action' => 'add_edit', $user->id]) ?> |
                 <?= $this->Form->postLink('Delete', ['action' => 'delete', $user->id], ['confirm' => 'Are you sure?']) ?>
